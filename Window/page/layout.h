@@ -17,6 +17,9 @@ public:
 	int id;
 	bool active;
 
+	Layout();
+	~Layout();
+
 	void registerPage();
 
 	void keyDown(int code);
