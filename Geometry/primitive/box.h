@@ -1,0 +1,6 @@
+#ifndef RWE_GEOMETRY_PRIMITIVE_BOX
+#define RWE_GEOMETRY_PRIMITIVE_BOX
+
+
+
+#endif

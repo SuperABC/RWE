@@ -1,0 +1,6 @@
+#ifndef RWE_PLUGIN_MANAGER_REGISTER
+#define RWE_PLUGIN_MANAGER_REGISTER
+
+
+
+#endif

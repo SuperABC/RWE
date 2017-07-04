@@ -1,0 +1,6 @@
+#ifndef RWE_COMPILER_MACHINE_BITMAP
+#define RWE_COMPILER_MACHINE_BITMAP
+
+
+
+#endif
