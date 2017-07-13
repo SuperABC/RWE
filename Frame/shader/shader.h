@@ -1,6 +1,5 @@
 #ifndef MOLE_FRAME_SHADER_SHADER
 #define MOLE_FRAME_SHADER_SHADER
-
 #include "Frame/main/main.h"
 
 char *readText(const char *file);

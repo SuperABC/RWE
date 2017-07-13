@@ -1,11 +1,11 @@
 #ifndef RWE_WINDOW_PAGE_LAYOUT
 #define RWE_WINDOW_PAGE_LAYOUT
+#include "Frame/main/main.h"
 #include "Window/scene/model.h"
 
 enum LAYOUTTYPE {
-	LT_WELCOME = 0,
-	LT_TEXT = 1,
-	LT_GRAPHIC,
+	LT_WELCOME,
+	LT_NORMAL,
 	LT_SGS
 };
 
@@ -35,10 +35,7 @@ public:
 class Welcome : public Layout {
 
 };
-class Text : public Layout {
-
-};
-class Graphic : public Layout {
+class Normal : public Layout {
 
 };
 class Sgs : public Layout {
