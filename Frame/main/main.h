@@ -9,6 +9,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <queue>
+#include <list>
 #include <glfw/glew.h>
 #include <gl/freeglut.h>
 
@@ -31,6 +33,8 @@ using std::cout;
 using std::endl;
 using std::string;
 using std::vector;
+using std::queue;
+using std::list;
 
 #define PI 3.14159265359
 
@@ -43,6 +47,18 @@ T clamp(T low, T high, T input) {
 	if (input < low)return low;
 	if (input > high)return high;
 	return input;
+}
+template <typename T>
+T min(T x, T y) {
+	return x < y ? x : y;
+}
+template <typename T>
+T max(T x, T y) {
+	return x > y ? x : y;
+}
+template <typename T>
+T interpolate(float prop, T x, T y) {
+	return x*prop + y*(1 - prop);
 }
 
 struct Mouse {
