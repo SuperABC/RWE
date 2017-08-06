@@ -38,6 +38,11 @@ using std::list;
 
 #define PI 3.14159265359
 
+#define SCR_WIDTH 800
+#define SCR_HEIGHT 600
+#define SHADOW_WIDTH 8192
+#define SHADOW_HEIGHT 8192
+
 template <typename T>
 T *toArray(vector<T> *v) {
 	return &((*v)[0]);

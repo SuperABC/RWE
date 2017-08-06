@@ -22,7 +22,7 @@ static void RWEInit() {
 	texShader = new Shader("Frame//shader//tex.vert", "Frame//shader//tex.frag");
 	shadowShader = new Shader("Frame//shader//shadow.vert", "Frame//shader//shadow.frag");
 
-	eye = new Eye();
+	eye = new Eye(glm::vec3(0.0f, 0.0f, 8.0f));
 	mouse = new Mouse();
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 }
@@ -66,8 +66,7 @@ void build() {
 	tmpScene->elements.push_back(inputLayout);
 	globe.push_back(tmpScene);
 
-	Light *newLight = new Light(2, glm::vec3(-28, 20, 12), glm::vec3(1, 1, 1), glm::vec3(0.6, 0.6, 0.6), glm::vec3());
-	light.push_back(newLight);
+	light.push_back(new Light(glm::vec3(-28.f, 20.f, 12.f), glm::vec3(.8f, .8f, .8f), glm::vec3(.2f, .2f, .2f), .6f));
 }
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);

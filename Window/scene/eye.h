@@ -3,13 +3,14 @@
 #include "Frame/main/main.h"
 
 class Eye {
-private:
+public:
+	Eye();
+	Eye(glm::vec3 pos);
+	~Eye();
+
 	glm::vec3 pos, dir, up;
 	float theta, phy;
 	float dist;
-public:
-	Eye();
-	~Eye();
 
 	glm::mat4 view();
 	void rotate(float angx, float angy);

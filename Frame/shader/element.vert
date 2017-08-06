@@ -1,28 +1,41 @@
-#version 400
+#version 330 core
 
-layout(location=0)in vec3 a_Position;
-layout(location=1)in vec3 a_Color;
-layout(location=2)in vec3 a_Normal;
+layout (location = 0) in vec3 a_Position;
 
-uniform int u_StaticView;
+layout (location = 1) in vec3 a_Normal;
 
-uniform mat4 u_PerspectMatrix;
-uniform mat4 u_ViewMatrix;
-uniform mat4 u_MatrixFromLight;
+layout (location = 2) in vec3 a_Color;
+
+
 
 out vec3 v_Position;
-out vec3 v_Color;
+
 out vec3 v_Normal;
+
+out vec3 v_Color;
 
 out vec4 v_PosFromLight;
 
+
+
+uniform mat4 u_projection;
+
+uniform mat4 u_view;
+
+uniform mat4 u_lightMatrix;
+
+
+
 void main() {
-    if(u_StaticView == 1)
-        gl_Position = u_PerspectMatrix * vec4(a_Position, 1.0);
-    else
-        gl_Position = u_PerspectMatrix * u_ViewMatrix * vec4(a_Position, 1.0);
+
     v_Position = a_Position;
-    v_Color = a_Color;
+
     v_Normal = a_Normal;
-    v_PosFromLight = u_MatrixFromLight * vec4(a_Position, 1.0);
+
+    v_Color = a_Color;
+
+    v_PosFromLight = u_lightMatrix * vec4(v_Position, 1.0);
+
+    gl_Position = u_projection * u_view * vec4(a_Position, 1.0);
+
 }

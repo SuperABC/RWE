@@ -1,5 +1,10 @@
 #ifndef RWE_BUILDER_GENERATOR_WIDGET
 #define RWE_BUILDER_GENERATOR_WIDGET
+
+/*
+ *Class Widget is the primitive in sgs graph.
+*/
+
 #include "Frame/main/main.h"
 
 typedef void(*mouseMoveCall)(void *w, int x, int y);

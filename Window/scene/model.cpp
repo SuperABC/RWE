@@ -85,8 +85,8 @@ void Element::load(const char *filename) {
 				int p1 = atoi(v1.c_str());
 				int p2 = atoi(v2.c_str());
 				int p3 = atoi(v3.c_str());
-				glm::vec3 edge1(pos[p2*3 - 3]-pos[p1*3 - 3],
-					pos[p2 * 3 - 2] - pos[p1 * 3 - 2], 
+				glm::vec3 edge1(pos[p2 * 3 - 3] - pos[p1 * 3 - 3],
+					pos[p2 * 3 - 2] - pos[p1 * 3 - 2],
 					pos[p2 * 3 - 1] - pos[p1 * 3 - 1]);
 				glm::vec3 edge2(pos[p3 * 3 - 3] - pos[p2 * 3 - 3],
 					pos[p3 * 3 - 2] - pos[p2 * 3 - 2],
@@ -161,67 +161,43 @@ void Element::load(const char *filename) {
 	}
 }
 void Element::shadow() {
-	float *positionData = &pos[0];
-	glBindBuffer(GL_ARRAY_BUFFER, spositionBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, pos.size() * 4, positionData, GL_STATIC_DRAW);
-
+	shadowShader->use();
 	glBindVertexArray(svao);
-	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, spositionBufferHandle);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glBufferData(GL_ARRAY_BUFFER, pos.size() * 4, getPos(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
 	glBindVertexArray(0);
 
 	glBindVertexArray(svao);
 	glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
-	glBindVertexArray(0);
-	glDisableVertexAttribArray(0);
 }
 void Element::show() {
-	float *positionData = &pos[0];
-	glBindBuffer(GL_ARRAY_BUFFER, positionBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, pos.size() * 4, positionData, GL_STATIC_DRAW);
-	float *colorData = &color[0];
-	glBindBuffer(GL_ARRAY_BUFFER, colorBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, color.size() * 4, colorData, GL_STATIC_DRAW);
-	float *normalData = &normal[0];
-	glBindBuffer(GL_ARRAY_BUFFER, normalBufferHandle);
-	glBufferData(GL_ARRAY_BUFFER, normal.size() * 4, normalData, GL_STATIC_DRAW);
-
+	elementShader->use();
 	glBindVertexArray(vao);
-
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-
 	glBindBuffer(GL_ARRAY_BUFFER, positionBufferHandle);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glBufferData(GL_ARRAY_BUFFER, pos.size() * 4, getPos(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, colorBufferHandle);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glBufferData(GL_ARRAY_BUFFER, color.size() * 4, getColor(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, normalBufferHandle);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glBufferData(GL_ARRAY_BUFFER, normal.size() * 4, getNormal(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
 	glBindVertexArray(0);
 
+	glm::mat4 model;
+	elementShader->setInt("u_shadowMap", 0);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
-	glBindVertexArray(0);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
 }
 
 void Scene::shadow() {
 	for (auto &e : elements)e.shadow();
 }
 void Scene::show() {
-	glUniform1i(glGetUniformLocation(elementShader->program, "u_StaticView"), 0);
-
-	glm::mat4 perspectMatrix;
-	perspectMatrix = glm::perspective(70.f, 800.f / 600.f, .1f, 1000000.f);
-	glUniformMatrix4fv(glGetUniformLocation(elementShader->program, "u_PerspectMatrix"), 1, false, glm::value_ptr(perspectMatrix));
-	glm::mat4 viewMatrix;
-	viewMatrix = eye->view();
-	glUniformMatrix4fv(glGetUniformLocation(elementShader->program, "u_ViewMatrix"), 1, false, glm::value_ptr(viewMatrix));
-
 	for (auto &e : elements)e.show();
 }

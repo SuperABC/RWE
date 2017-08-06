@@ -2,43 +2,49 @@
 #define MOLE_WINDOW_SCENE_LIGHT
 #include "Frame/main/main.h"
 
-enum lm {
-	NO_SRC,
-	DIR_SRC,
-	POINT_SRC
-};
-
 class Light {
 private:
-	union {
-		glm::vec3 pos;
-		glm::vec3 dir;
-	};
-	enum lm mode;
-	glm::vec3 diffuse, ambient, specular;
-	GLuint frameHandle, textureHandle, depthHandle;
+	glm::vec3 pos;
+	glm::vec3 diffuse, ambient;
+	GLfloat specular;
+	GLuint frameHandle, textureHandle;
+
+	glm::mat4 lightMatrix;
 
 	void genShadow();
 public:
-	Light(int mode, glm::vec3 para, glm::vec3 diff, glm::vec3 amb, glm::vec3 spec) {
-		this->mode = enum lm(mode);
-		pos = dir = para;
+	Light() {};
+	Light(glm::vec3 position, glm::vec3 diff, glm::vec3 amb, GLfloat spec) {
+		pos = position;
 		diffuse = diff;
 		ambient = amb;
 		specular = spec;
-		glGenTextures(1, &textureHandle);
 		glGenFramebuffers(1, &frameHandle);
-		glGenRenderbuffers(1, &depthHandle);
+		glGenTextures(1, &textureHandle);
+
+		glBindTexture(GL_TEXTURE_2D, textureHandle);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, frameHandle);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureHandle, 0);
+
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, NULL);
 	};
 	Light(const Light &l) {
-		mode = l.mode;
 		pos = l.pos;
 		diffuse = l.diffuse;
 		ambient = l.ambient;
 		specular = l.specular;
-		glGenTextures(1, &textureHandle);
-		glGenFramebuffers(1, &frameHandle);
-		glGenRenderbuffers(1, &depthHandle);
+		textureHandle = l.textureHandle;
+		frameHandle = l.frameHandle;
 	};
 	void render();
 };

@@ -7,7 +7,15 @@ Eye::Eye() {
 	this->up = glm::vec3(0, 1, 0);
 	this->theta = float(PI / 2);
 	this->phy = float(PI / 2);
-	this->dist = 4.f;
+	this->dist = 8.f;
+}
+Eye::Eye(glm::vec3 pos) {
+	this->pos = pos;
+	this->dir = glm::vec3(0, 0, -1);
+	this->up = glm::vec3(0, 1, 0);
+	this->theta = float(PI / 2);
+	this->phy = float(PI / 2);
+	this->dist = 8.f;
 }
 Eye::~Eye() {
 
@@ -18,7 +26,7 @@ glm::mat4 Eye::view() {
 }
 void Eye::rotate(float angx, float angy) {
 	this->theta += angx;
-	this->phy = clamp<float>(0.01f, float(PI-0.01), this->phy - angy);
+	this->phy = clamp<float>(0.01f, float(PI - 0.01), this->phy - angy);
 	this->pos.x = dist*sin(phy)*cos(theta);
 	this->pos.y = dist*cos(phy);
 	this->pos.z = dist*sin(phy)*sin(theta);

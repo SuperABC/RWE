@@ -1,5 +1,6 @@
 #ifndef RWE_GEOMETRY_PRIMITIVE_BOX
 #define RWE_GEOMETRY_PRIMITIVE_BOX
+
 #include "Frame/main/main.h"
 #include "arith.h"
 #include "ray.h"

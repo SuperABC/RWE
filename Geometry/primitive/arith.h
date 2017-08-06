@@ -1,5 +1,6 @@
 #ifndef RWE_GEOMETRY_PRIMITIVE_ARITH
 #define RWE_GEOMETRY_PRIMITIVE_ARITH
+
 #include "Frame/main/main.h"
 
 class Point;
