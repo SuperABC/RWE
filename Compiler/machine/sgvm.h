@@ -1,6 +1,0 @@
-#ifndef RWE_COMPILER_MACHINE_SGVM
-#define RWE_COMPILER_MACHINE_SGVM
-
-
-
-#endif
