@@ -5,13 +5,14 @@
 
 enum LAYOUTTYPE {
 	LT_WELCOME,
-	LT_NORMAL,
+	LT_COMPILER,
 	LT_SGS
 };
 
 class Layout {
 private:
 	Scene window;
+	Scene dynam;
 public:
 	LAYOUTTYPE type;
 	int id;
@@ -22,20 +23,20 @@ public:
 
 	void registerPage();
 
-	void keyDown(int code);
-	void keyUp(int code);
-	void mouseMove(int x, int y);
-	void mosueDrag(int x, int y);
-	void mouseClick(int button, int state, int x, int y);
-	void mouseWheel(int wheel, int dir, int x, int y);
+	virtual void keyDown(int code) = 0;
+	virtual void keyUp(int code) = 0;
+	virtual void mouseMove(int x, int y) = 0;
+	virtual void mouseDrag(int x, int y, int dx, int dy) = 0;
+	virtual void mouseClick(int button, int state, int x, int y) = 0;
+	virtual void mouseWheel(int wheel, int dir, int x, int y) = 0;
 
-	void idle();
+	virtual void idle() = 0;
 };
 
 class Welcome : public Layout {
 
 };
-class Normal : public Layout {
+class Compiler : public Layout {
 
 };
 class Sgs : public Layout {
