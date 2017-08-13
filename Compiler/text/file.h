@@ -1,5 +1,5 @@
-#ifndef RWE_EDITOR_TEXT_FILE
-#define RWE_EDITOR_TEXT_FILE
+#ifndef RWE_COMPILER_TEXT_FILE
+#define RWE_COMPILER_TEXT_FILE
 #include "Frame/main/main.h"
 #include "block.h"
 #include "Window/scene/model.h"
