@@ -1,5 +1,5 @@
-#ifndef RWE_EDITOR_TEXT_BLOCK
-#define RWE_EDITOR_TEXT_BLOCK
+#ifndef RWE_COMPILER_TEXT_BLOCK
+#define RWE_COMPILER_TEXT_BLOCK
 #include "Frame/main/main.h"
 
 #define BLOCK_SIZE 4096
