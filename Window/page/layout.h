@@ -34,12 +34,33 @@ public:
 };
 
 class Welcome : public Layout {
-
+public:
+	virtual void keyDown(int code);
+	virtual void keyUp(int code);
+	virtual void mouseMove(int x, int y);
+	virtual void mouseDrag(int x, int y, int dx, int dy);
+	virtual void mouseClick(int button, int state, int x, int y);
+	virtual void mouseWheel(int wheel, int dir, int x, int y);
+	virtual void idle();
 };
 class Compiler : public Layout {
-
+public:
+	virtual void keyDown(int code);
+	virtual void keyUp(int code);
+	virtual void mouseMove(int x, int y);
+	virtual void mouseDrag(int x, int y, int dx, int dy);
+	virtual void mouseClick(int button, int state, int x, int y);
+	virtual void mouseWheel(int wheel, int dir, int x, int y);
+	virtual void idle();
 };
 class Sgs : public Layout {
-
+public:
+	virtual void keyDown(int code);
+	virtual void keyUp(int code);
+	virtual void mouseMove(int x, int y);
+	virtual void mouseDrag(int x, int y, int dx, int dy);
+	virtual void mouseClick(int button, int state, int x, int y);
+	virtual void mouseWheel(int wheel, int dir, int x, int y);
+	virtual void idle();
 };
 #endif
