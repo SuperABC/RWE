@@ -70,5 +70,10 @@ struct Mouse {
 	glm::vec2 pre, tmp;
 	int state[3];
 };
+struct Keyboard {
+	bool shift;
+	bool ctrl;
+	bool alt;
+};
 
 #endif
