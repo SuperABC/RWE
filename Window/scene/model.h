@@ -1,6 +1,8 @@
 #ifndef MOLE_WINDOW_SCENE_MODEL
 #define MOLE_WINDOW_SCENE_MODEL
 #include "Frame/main/main.h"
+#include "Sgs/machine/bitmap.h"
+#include <atlimage.h>
 
 class Element {
 private:
@@ -14,13 +16,21 @@ private:
 	};
 	vector<Material> surface;
 	int active = -1;
+
+	glm::vec3 kd, ka;
+	float ks;
+
 public:
+	bool diy = false;
+
 	GLuint vao, svao;
 	GLuint vboHandles[3],
 		positionBufferHandle, colorBufferHandle, normalBufferHandle;
 	GLuint spositionBufferHandle;
 
-	Element() {
+	Element(bool diy = false,
+		glm::vec3 d = glm::vec3(0.0, 0.0, 0.0), glm::vec3 a = glm::vec3(0.0, 0.0, 0.0),
+		float s = 0) {
 		pos.clear();
 		color.clear();
 		normal.clear();
@@ -31,6 +41,11 @@ public:
 		colorBufferHandle = vboHandles[1];
 		normalBufferHandle = vboHandles[2];
 		glGenBuffers(1, &spositionBufferHandle);
+
+		this->diy = diy;
+		kd = d;
+		ka = a;
+		ks = s;
 	}
 	void pushPos(float pos1 = 0, float pos2 = 0, float pos3 = 0) {
 		pos.push_back(pos1);
@@ -57,12 +72,78 @@ public:
 		return toArray<float>(&normal);
 	}
 
-	void load(const char *filename);
+	Element *load(const char *filename);
 	void shadow();
 	void show();
 };
 class Texture {
+private:
+	vector<float> pos;
+	vector<float> coord;
+	vector<float> normal;
 
+	Screen src;
+
+	glm::vec3 kd, ka;
+	float ks;
+
+public:
+	bool diy = false;
+
+	GLuint vao, svao, texName;
+	GLuint vboHandles[3],
+		positionBufferHandle, coordBufferHandle, normalBufferHandle;
+	GLuint spositionBufferHandle;
+
+	Texture(bool diy = false,
+		glm::vec3 d = glm::vec3(0.0, 0.0, 0.0), glm::vec3 a = glm::vec3(0.0, 0.0, 0.0),
+		float s = 0) {
+		pos.clear();
+		coord.clear();
+		normal.clear();
+		glGenVertexArrays(1, &vao);
+		glGenVertexArrays(1, &svao);
+		glGenBuffers(3, vboHandles);
+		positionBufferHandle = vboHandles[0];
+		coordBufferHandle = vboHandles[1];
+		normalBufferHandle = vboHandles[2];
+		glGenBuffers(1, &spositionBufferHandle);
+		glGenTextures(1, &texName);
+
+		this->diy = diy;
+		kd = d;
+		ka = a;
+		ks = s;
+	}
+	void pushPos(float pos1 = 0, float pos2 = 0, float pos3 = 0) {
+		pos.push_back(pos1);
+		pos.push_back(pos2);
+		pos.push_back(pos3);
+	}
+	void pushCoord(float coord1 = 0.f, float coord2 = 0.f) {
+		coord.push_back(coord1);
+		coord.push_back(coord2);
+	}
+	void pushNormal(float normal1, float normal2, float normal3) {
+		normal.push_back(normal1);
+		normal.push_back(normal2);
+		normal.push_back(normal3);
+	}
+	float *getPos() {
+		return toArray<float>(&pos);
+	}
+	float *getCoord() {
+		return toArray<float>(&coord);
+	}
+	float *getNormal() {
+		return toArray<float>(&normal);
+	}
+
+	Texture *load(const char *filename);
+	void shadow();
+	void show();
+
+	void pic(const char *fileName);
 };
 
 class Scene {
@@ -78,7 +159,7 @@ public:
 	Scene() { active = true; };
 	~Scene() {};
 	void shadow();
-	void show();
+	void show(GLuint id);
 };
 
 #endif

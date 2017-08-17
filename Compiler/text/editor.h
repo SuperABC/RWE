@@ -12,8 +12,8 @@ private:
 
 	Square area;
 public:
-	Editor();
-	~Editor();
+	Editor() {};
+	~Editor() {};
 	void build();
 };
 

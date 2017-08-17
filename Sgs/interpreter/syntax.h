@@ -18,8 +18,9 @@ private:
 	enum QUERYSTEP step;
 	int proc;
 public:
-	Syntax(std::vector<char *>ids, std::vector<tokenPrim>input);
-	~Syntax();
+	Syntax() {};
+	Syntax(std::vector<char *>ids, std::vector<tokenPrim>input) {};
+	~Syntax() {};
 
 	static char *opStr(int id);
 	static char *valueStr(float value);

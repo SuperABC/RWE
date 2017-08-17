@@ -12,6 +12,7 @@ private:
 
 	Screen screen;
 public:
+	Sgvm() {};
 	void execute(string input);
 };
 

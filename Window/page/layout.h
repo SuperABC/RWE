@@ -2,6 +2,12 @@
 #define RWE_WINDOW_PAGE_LAYOUT
 #include "Frame/main/main.h"
 #include "Window/scene/model.h"
+#include "Geometry/primitive/shape.h"
+#include "Compiler/text/editor.h"
+#include "Sgs/machine/sgvm.h"
+#include "Sgs/console/console.h"
+
+#define MAX_WND 16
 
 enum LAYOUTTYPE {
 	LT_WELCOME,
@@ -10,57 +16,69 @@ enum LAYOUTTYPE {
 };
 
 class Layout {
-private:
+protected:
 	Scene window;
-	Scene dynam;
 public:
 	LAYOUTTYPE type;
-	int id;
 	bool active;
 
-	Layout();
-	~Layout();
+	Layout() : active(false) {};
+	~Layout() {};
 
 	void registerPage();
 
 	virtual void keyDown(int code) = 0;
 	virtual void keyUp(int code) = 0;
-	virtual void mouseMove(int x, int y) = 0;
-	virtual void mouseDrag(int x, int y, int dx, int dy) = 0;
-	virtual void mouseClick(int button, int state, int x, int y) = 0;
-	virtual void mouseWheel(int wheel, int dir, int x, int y) = 0;
+	virtual void mouseMove(Ray r) = 0;
+	virtual void mouseDrag(Ray r, Ray pre) = 0;
+	virtual void mouseClick(int button, int state, Ray r) = 0;
+	virtual void mouseWheel(int wheel, int dir, Ray r) = 0;
 
 	virtual void idle() = 0;
 };
 
 class Welcome : public Layout {
+private:
+	Square area;
 public:
+	Welcome();
+
 	virtual void keyDown(int code);
 	virtual void keyUp(int code);
-	virtual void mouseMove(int x, int y);
-	virtual void mouseDrag(int x, int y, int dx, int dy);
-	virtual void mouseClick(int button, int state, int x, int y);
-	virtual void mouseWheel(int wheel, int dir, int x, int y);
+	virtual void mouseMove(Ray r);
+	virtual void mouseDrag(Ray r, Ray pre);
+	virtual void mouseClick(int button, int state, Ray r);
+	virtual void mouseWheel(int wheel, int dir, Ray r);
 	virtual void idle();
 };
 class Compiler : public Layout {
+private:
+	Editor editor;
 public:
+	Compiler();
+
 	virtual void keyDown(int code);
 	virtual void keyUp(int code);
-	virtual void mouseMove(int x, int y);
-	virtual void mouseDrag(int x, int y, int dx, int dy);
-	virtual void mouseClick(int button, int state, int x, int y);
-	virtual void mouseWheel(int wheel, int dir, int x, int y);
+	virtual void mouseMove(Ray r);
+	virtual void mouseDrag(Ray r, Ray pre);
+	virtual void mouseClick(int button, int state, Ray r);
+	virtual void mouseWheel(int wheel, int dir, Ray r);
 	virtual void idle();
 };
 class Sgs : public Layout {
+private:
+	Editor editor;
+	Sgvm vm;
+	Console console;
 public:
+	Sgs();
+
 	virtual void keyDown(int code);
 	virtual void keyUp(int code);
-	virtual void mouseMove(int x, int y);
-	virtual void mouseDrag(int x, int y, int dx, int dy);
-	virtual void mouseClick(int button, int state, int x, int y);
-	virtual void mouseWheel(int wheel, int dir, int x, int y);
+	virtual void mouseMove(Ray r);
+	virtual void mouseDrag(Ray r, Ray pre);
+	virtual void mouseClick(int button, int state, Ray r);
+	virtual void mouseWheel(int wheel, int dir, Ray r);
 	virtual void idle();
 };
 #endif

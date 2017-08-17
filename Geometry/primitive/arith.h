@@ -16,7 +16,12 @@ public:
 	Vector(float xx, float yy, float zz)
 		: x(xx), y(yy), z(zz) {};
 	explicit Vector(const Point &p);
-	Vector(const Vector &v) {}
+	Vector(const Vector &v) {
+		x = v.x; y = v.y; z = v.z;
+	}
+	Vector(const glm::vec4 v) {
+		x = v.x/v.w; y = v.y/v.w; z = v.z/v.w;
+	}
 
 	Vector &operator=(const Vector &v) {
 		x = v.x; y = v.y; z = v.z;
@@ -67,6 +72,8 @@ public:
 	float length() const { return sqrtf(square()); }
 	Vector normal() const { return *this / square(); }
 	Vector &normalize() { return *this /= square(); }
+
+	glm::vec4 toVec() { return glm::vec4(x, y, z, 1.f); }
 };
 
 class Point {
@@ -79,6 +86,12 @@ public:
 	}
 	Point(const Point &p) {
 		x = p.x; y = p.y; z = p.z;
+	}
+	Point(const glm::vec3 v) {
+		x = v.r; y = v.g; z = v.b;
+	}
+	Point(const glm::vec4 v) {
+		x = v.x / v.w; y = v.y / v.w; z = v.z / v.w;
 	}
 
 	Point &operator=(const Point &p) {
@@ -136,6 +149,9 @@ public:
 	bool operator!=(const Point &p) const {
 		return x != p.x || y != p.y || z != p.z;
 	}
+	glm::vec4 toVec() { return glm::vec4(x, y, z, 1.f); }
 };
 
+float dot(Vector v1, Vector v2);
+Vector cross(Vector v1, Vector v2);
 #endif

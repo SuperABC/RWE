@@ -21,7 +21,7 @@ static void RWEInit() {
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
 	elementShader = new Shader("Frame//shader//element.vert", "Frame//shader//element.frag");
-	//texShader = new Shader("Frame//shader//tex.vert", "Frame//shader//tex.frag");
+	texShader = new Shader("Frame//shader//tex.vert", "Frame//shader//tex.frag");
 	shadowShader = new Shader("Frame//shader//shadow.vert", "Frame//shader//shadow.frag");
 
 	eye = new Eye(glm::vec3(0.0f, 0.0f, 8.0f));
@@ -38,17 +38,14 @@ static void RWEDisplay() {
 	glutSwapBuffers();
 }
 static void RWEIdle() {
-
+	for (auto l : window) {
+		l->idle();
+	}
 }
 
 void build() {
-	Element inputLayout;
-	Scene *tmpScene = new Scene();
-	inputLayout.load("Window//src//welcome.obj");
-	tmpScene->elements.push_back(inputLayout);
-	globe.push_back(tmpScene);
-
-	light.push_back(new Light(glm::vec3(-28.f, 20.f, 12.f), glm::vec3(.8f, .8f, .8f), glm::vec3(.3f, .3f, .3f), .2f));
+	(new Welcome())->registerPage();
+	light.push_back(new Light(0, glm::vec3(-28.f, 20.f, 16.f), glm::vec3(.8f, .8f, .8f), glm::vec3(.3f, .3f, .3f), .3f));
 }
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);

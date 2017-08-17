@@ -38,8 +38,8 @@ private:
 public:
 	std::vector<char *>strId;
 
-	Lexeme(const unsigned char *input = NULL);
-	~Lexeme();
+	Lexeme(const unsigned char *input = NULL) {};
+	~Lexeme() {};
 
 	void prepare();
 	std::vector<tokenPrim>parse();

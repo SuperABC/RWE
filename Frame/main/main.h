@@ -12,6 +12,7 @@
 #include <queue>
 #include <list>
 #include <glfw/glew.h>
+#include <gl/glaux.h> 
 #include <gl/freeglut.h>
 
 #include <glm/mat4x4.hpp>

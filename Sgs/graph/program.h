@@ -20,6 +20,7 @@ public:
 	~Program();
 	
 	void addPage();
+	void generate();
 };
 
 #endif

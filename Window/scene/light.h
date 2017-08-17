@@ -5,16 +5,19 @@
 class Light {
 private:
 	glm::vec3 pos;
-	glm::vec3 diffuse, ambient;
-	GLfloat specular;
 	GLuint frameHandle, textureHandle;
 
 	glm::mat4 lightMatrix;
 
+	GLuint id;
+
 	void genShadow();
 public:
-	Light() {};
-	Light(glm::vec3 position, glm::vec3 diff, glm::vec3 amb, GLfloat spec) {
+	glm::vec3 diffuse, ambient;
+	GLfloat specular;
+
+	Light(GLuint ID) : id(ID) {};
+	Light(GLuint ID, glm::vec3 position, glm::vec3 diff, glm::vec3 amb, GLfloat spec) {
 		pos = position;
 		diffuse = diff;
 		ambient = amb;
@@ -45,6 +48,7 @@ public:
 		specular = l.specular;
 		textureHandle = l.textureHandle;
 		frameHandle = l.frameHandle;
+		id = l.id;
 	};
 	void render();
 };

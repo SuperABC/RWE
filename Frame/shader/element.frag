@@ -47,7 +47,7 @@ float ShadowCalculation(vec4 posFromLight) {
 
     vec3 lightDir = normalize(u_lightPos - v_Position);
 
-    float bias = 0.005;
+    float bias = 0.001;
 
     float shadow = 0.0;
 

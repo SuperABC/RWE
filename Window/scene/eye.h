@@ -1,6 +1,7 @@
 #ifndef MOLE_WINDOW_SCENE_EYE
 #define MOLE_WINDOW_SCENE_EYE
 #include "Frame/main/main.h"
+#include "Geometry/primitive/ray.h"
 
 class Eye {
 public:
@@ -15,6 +16,7 @@ public:
 	glm::mat4 view();
 	void rotate(float angx, float angy);
 	void zoom(float prop);
+	Ray ray(int x, int y);
 };
 
 #endif

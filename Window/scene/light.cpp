@@ -32,9 +32,9 @@ void Light::render() {
 
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	elementShader->use();
-	glm::mat4 projection = glm::perspective(45.f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+	glm::mat4 projection = glm::perspective(45.f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
 	glm::mat4 view = glm::lookAt(eye->pos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	elementShader->use();
 	elementShader->setMat4("u_projection", projection);
 	elementShader->setMat4("u_view", view);
 	elementShader->setMat4("u_lightMatrix", lightMatrix);
@@ -43,9 +43,19 @@ void Light::render() {
 	elementShader->setVec3("u_lightDiff", diffuse);
 	elementShader->setVec3("u_lightAmb", ambient);
 	elementShader->setFloat("u_lightSpec", specular);
+	texShader->use();
+	texShader->setMat4("u_projection", projection);
+	texShader->setMat4("u_view", view);
+	texShader->setMat4("u_lightMatrix", lightMatrix);
+	texShader->setVec3("u_eyePos", eye->pos);
+	texShader->setVec3("u_lightPos", pos);
+	texShader->setVec3("u_lightDiff", diffuse);
+	texShader->setVec3("u_lightAmb", ambient);
+	texShader->setFloat("u_lightSpec", specular);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureHandle);
-	for (auto s : globe)
-		s->show();
+	for (auto s : globe) {
+		s->show(id);
+	}
 }
 

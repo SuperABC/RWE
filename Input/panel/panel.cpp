@@ -16,14 +16,14 @@ void RWEMouse(int x, int y) {
 	mouse->tmp.x = float(x);
 	mouse->tmp.y = float(y);
 	for (auto l : window) {
-		l->mouseMove(x, y);
+		l->mouseMove(eye->ray(x, y));
 	}
 }
 void RWEDrag(int x, int y) {
 	if (mouse->state[GLUT_LEFT_BUTTON] == GLUT_DOWN)
 		eye->rotate(float(x - mouse->pre.x) / 200, float(y - mouse->pre.y) / 200);
 	for (auto l : window) {
-		l->mouseDrag(x, y, x - mouse->pre.x, y - mouse->pre.y);
+		l->mouseDrag(eye->ray(x, y), eye->ray((int)mouse->pre.x, (int)mouse->pre.y));
 	}
 	mouse->pre.x = float(x);
 	mouse->pre.y = float(y);
@@ -36,14 +36,15 @@ void RWEClick(int button, int state, int x, int y) {
 		mouse->pre.y = float(y);
 	}
 	for (auto l : window) {
-		l->mouseClick(button, state, x, y);
+		Ray r = eye->ray(x, y);
+		l->mouseClick(button, state, r);
 	}
 }
 void RWEWheel(int wheel, int dir, int x, int y) {
 	if (dir > 0)eye->zoom(.8f);
 	if (dir < 0)eye->zoom(1.2f);
 	for (auto l : window) {
-		l->mouseClick(wheel, dir, x, y);
+		l->mouseClick(wheel, dir, eye->ray(x, y));
 	}
 	glutPostRedisplay();
 }
@@ -67,4 +68,5 @@ void RWEKeyUp(unsigned char cAscii, int x, int y) {
 		l->keyUp(cAscii);
 	}
 }
+
 

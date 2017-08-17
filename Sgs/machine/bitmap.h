@@ -7,12 +7,12 @@ typedef struct {
 }RGB;
 
 class Bitmap {
-private:
+public:
 	int sizeX, sizeY;
 	unsigned char *data;
 };
 
-class Screen : private Bitmap {
+class Screen : public Bitmap {
 public:
 	void setColor(int r, int g, int b);
 	void clearScreen();
