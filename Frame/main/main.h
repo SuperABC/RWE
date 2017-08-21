@@ -39,8 +39,6 @@ using std::list;
 
 #define PI 3.14159265359
 
-#define SCR_WIDTH 800
-#define SCR_HEIGHT 600
 #define SHADOW_WIDTH 8192
 #define SHADOW_HEIGHT 8192
 
@@ -70,6 +68,9 @@ T interpolate(float prop, T x, T y) {
 struct Mouse {
 	glm::vec2 pre, tmp;
 	int state[3];
+	Mouse() {
+		state[0] = state[1] = state[2] = 1;
+	}
 };
 struct Keyboard {
 	bool shift;
