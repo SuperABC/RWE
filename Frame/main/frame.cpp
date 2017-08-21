@@ -6,6 +6,9 @@
 #include "Window/page/layout.h"
 #include "Input/panel/panel.h"
 
+int SCR_WIDTH = 800;
+int SCR_HEIGHT = 600;
+
 vector<Layout*> window;
 vector<Scene*> globe;
 vector<Light*> light;
@@ -37,6 +40,10 @@ static void RWEDisplay() {
 
 	glutSwapBuffers();
 }
+static void RWEReshape(int w, int h) {
+	SCR_WIDTH = w;
+	SCR_HEIGHT = h;
+}
 static void RWEIdle() {
 	for (auto l : window) {
 		l->idle();
@@ -45,7 +52,7 @@ static void RWEIdle() {
 
 void build() {
 	(new Welcome())->registerPage();
-	light.push_back(new Light(0, glm::vec3(-28.f, 20.f, 16.f), glm::vec3(.8f, .8f, .8f), glm::vec3(.3f, .3f, .3f), .3f));
+	light.push_back(new Light(0, glm::vec3(-24.f, 32.f, 18.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.3f, .3f, .3f), .3f));
 }
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
@@ -57,6 +64,7 @@ int main(int argc, char *argv[]) {
 	RWEInit();
 
 	glutDisplayFunc(RWEDisplay);
+	glutReshapeFunc(RWEReshape);
 	glutPassiveMotionFunc(RWEMouse);
 	glutMotionFunc(RWEDrag);
 	glutMouseFunc(RWEClick);
