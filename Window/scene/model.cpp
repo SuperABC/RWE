@@ -165,6 +165,8 @@ Element *Element::load(const char *filename) {
 }
 void Element::shadow() {
 	shadowShader->use();
+	shadowShader->setMat4("u_modelMatrix", model);
+
 	glBindVertexArray(svao);
 	glBindBuffer(GL_ARRAY_BUFFER, spositionBufferHandle);
 	glBufferData(GL_ARRAY_BUFFER, pos.size() * 4, getPos(), GL_STATIC_DRAW);
@@ -198,7 +200,7 @@ void Element::show() {
 		elementShader->setFloat("u_lightSpec", ks);
 	}
 
-	glm::mat4 model;
+	elementShader->setMat4("u_modelMatrix", model);
 	elementShader->setInt("u_shadowMap", 0);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, pos.size() / 3);
@@ -364,6 +366,8 @@ Texture *Texture::load(const char *filename) {
 }
 void Texture::shadow() {
 	shadowShader->use();
+	shadowShader->setMat4("u_modelMatrix", model);
+
 	glBindVertexArray(svao);
 	glBindBuffer(GL_ARRAY_BUFFER, spositionBufferHandle);
 	glBufferData(GL_ARRAY_BUFFER, pos.size() * 4, getPos(), GL_STATIC_DRAW);
@@ -403,7 +407,7 @@ void Texture::show() {
 		texShader->setFloat("u_lightSpec", ks);
 	}
 
-	glm::mat4 model;
+	texShader->setMat4("u_modelMatrix", model);
 	texShader->setInt("u_shadowMap", 0);
 	texShader->setInt("u_textureMap", 1);
 	glBindVertexArray(vao);
@@ -414,21 +418,21 @@ void Scene::shadow() {
 	for (auto &e : elements)e.shadow();
 	for (auto &t : textures)t.shadow();
 }
-void Scene::show(GLuint id) {
+void Scene::show(GLuint lightId) {
 	for (auto &e : elements) {
 		e.show();
 		if (e.diy) {
-			elementShader->setVec3("u_lightDiff", light[id]->diffuse);
-			elementShader->setVec3("u_lightAmb", light[id]->ambient);
-			elementShader->setFloat("u_lightSpec", light[id]->specular);
+			elementShader->setVec3("u_lightDiff", light[lightId]->diffuse);
+			elementShader->setVec3("u_lightAmb", light[lightId]->ambient);
+			elementShader->setFloat("u_lightSpec", light[lightId]->specular);
 		}
 	}
 	for (auto &t : textures) { 
 		t.show();
 		if (t.diy) {
-			elementShader->setVec3("u_lightDiff", light[id]->diffuse);
-			elementShader->setVec3("u_lightAmb", light[id]->ambient);
-			elementShader->setFloat("u_lightSpec", light[id]->specular);
+			elementShader->setVec3("u_lightDiff", light[lightId]->diffuse);
+			elementShader->setVec3("u_lightAmb", light[lightId]->ambient);
+			elementShader->setFloat("u_lightSpec", light[lightId]->specular);
 		}
 	}
 }

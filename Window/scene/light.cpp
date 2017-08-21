@@ -4,6 +4,9 @@
 #include "Frame/shader/shader.h"
 #include "Window/page/layout.h"
 
+extern int SCR_WIDTH;
+extern int SCR_HEIGHT;
+
 extern vector<Layout*> window;
 extern vector<Scene*> globe;
 extern Eye *eye;
@@ -14,7 +17,7 @@ extern Shader *shadowShader;
 
 void Light::genShadow() {
 	glm::mat4 lightProjection, lightView;
-	lightProjection = glm::perspective(60.f, (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT, 1.f, 1000.0f);
+	lightProjection = glm::perspective(60.f, (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT, 8.f, 10000.0f);
 	lightView = glm::lookAt(pos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	lightMatrix = lightProjection * lightView;
 	shadowShader->use();
@@ -33,7 +36,7 @@ void Light::render() {
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glm::mat4 projection = glm::perspective(45.f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
-	glm::mat4 view = glm::lookAt(eye->pos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	glm::mat4 view = glm::lookAt(eye->pos, eye->pos+eye->dir, glm::vec3(0.0, 1.0, 0.0));
 	elementShader->use();
 	elementShader->setMat4("u_projection", projection);
 	elementShader->setMat4("u_view", view);

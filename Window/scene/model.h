@@ -20,6 +20,7 @@ private:
 	glm::vec3 kd, ka;
 	float ks;
 
+	glm::mat4 model;
 public:
 	bool diy = false;
 
@@ -82,13 +83,13 @@ private:
 	vector<float> coord;
 	vector<float> normal;
 
-	Screen src;
-
 	glm::vec3 kd, ka;
 	float ks;
 
+	glm::mat4 model;
 public:
 	bool diy = false;
+	Screen src;
 
 	GLuint vao, svao, texName;
 	GLuint vboHandles[3],

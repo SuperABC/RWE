@@ -13,7 +13,10 @@ public:
 	float theta, phy;
 	float dist;
 
+	glm::mat4 model;
+
 	glm::mat4 view();
+	void move(float dx, float dy);
 	void rotate(float angx, float angy);
 	void zoom(float prop);
 	Ray ray(int x, int y);

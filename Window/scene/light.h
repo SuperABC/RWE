@@ -18,6 +18,8 @@ public:
 
 	Light(GLuint ID) : id(ID) {};
 	Light(GLuint ID, glm::vec3 position, glm::vec3 diff, glm::vec3 amb, GLfloat spec) {
+		id = ID;
+		
 		pos = position;
 		diffuse = diff;
 		ambient = amb;
