@@ -18,10 +18,13 @@ void RWEMouse(int x, int y) {
 	for (auto l : window) {
 		l->mouseMove(eye->ray(x, y));
 	}
+	glutPostRedisplay();
 }
 void RWEDrag(int x, int y) {
 	if (mouse->state[GLUT_LEFT_BUTTON] == GLUT_DOWN)
 		eye->rotate(float(x - mouse->pre.x) / 200, float(y - mouse->pre.y) / 200);
+	if (mouse->state[GLUT_RIGHT_BUTTON] == GLUT_DOWN)
+		eye->move(float(x - mouse->pre.x)/2, float(y - mouse->pre.y)/2);
 	for (auto l : window) {
 		l->mouseDrag(eye->ray(x, y), eye->ray((int)mouse->pre.x, (int)mouse->pre.y));
 	}
@@ -31,14 +34,15 @@ void RWEDrag(int x, int y) {
 }
 void RWEClick(int button, int state, int x, int y) {
 	mouse->state[button] = state;
+	mouse->pre.x = float(x);
+	mouse->pre.y = float(y);
 	if (button == GLUT_LEFT_BUTTON&&state == GLUT_DOWN) {
-		mouse->pre.x = float(x);
-		mouse->pre.y = float(y);
+		mouse->state[GLUT_LEFT_BUTTON] = GLUT_DOWN;
 	}
-	for (auto l : window) {
-		Ray r = eye->ray(x, y);
-		l->mouseClick(button, state, r);
+	for (unsigned int i = 0; i < window.size(); i++) {
+		window[i]->mouseClick(button, state, eye->ray(x, y));
 	}
+	glutPostRedisplay();
 }
 void RWEWheel(int wheel, int dir, int x, int y) {
 	if (dir > 0)eye->zoom(.8f);
