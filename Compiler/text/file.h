@@ -13,8 +13,10 @@ enum FILETYPE {
 
 class File {
 private:
-	list<Block> text;
+	Block *text;
 	vector<Element> model;
+
+	int focus;
 public:
 	FILETYPE type;
 
@@ -26,7 +28,8 @@ public:
 	~File();
 	void load(string filename);
 	void save(string filename);
-	vector<Element> show();
+	void add(int pos, char ch);
+	void del(int pos);
 };
 
 #endif
