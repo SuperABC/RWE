@@ -2,19 +2,22 @@
 #define RWE_COMPILER_TEXT_EDITOR
 #include "Frame/main/main.h"
 #include "block.h"
-#include "Window/scene/model.h"
+#include "file.h"
 #include "Geometry/primitive/shape.h"
 
 class Editor {
 private:
-	vector<Element> files;
+	vector<File> files;
 	int active;
 
 	Square area;
 public:
 	Editor() {};
+	Editor(Square s) {};
 	~Editor() {};
-	void build();
+	void show();
+
+
 };
 
 #endif
