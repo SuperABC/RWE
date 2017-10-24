@@ -2,6 +2,9 @@
 #define RWE_COMPILER_TEXT_BLOCK
 #include "Frame/main/main.h"
 
+#define DEFAULT_FONT 0
+#define DEFAULT_SIZE 20
+
 #define BLOCK_SIZE 4096
 struct Character {
 	int colorR, colorG, colorB;
@@ -11,12 +14,22 @@ struct Character {
 };
 class Block {
 private:
-	char content[BLOCK_SIZE];
+	vector<Character> content;
 	int startPos, endPos;
+
 public:
+	Block *next;
+
 	Block();
 	~Block();
-	void load(int start);
+
+	string get();
+	int length();
+	Block *load(const char *filename, int length, int start = 0);
+	Block *add(int pos, char ch);
+	Block *del(int pos);
+	Block *operator[] (int n);
+
 	vector<Character> output(int start, int end);
 };
 
