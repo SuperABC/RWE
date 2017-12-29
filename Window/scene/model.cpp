@@ -207,16 +207,11 @@ void Element::show() {
 }
 
 void Texture::pic(const char *fileName) {
-	int rt;
-	LPWSTR rs;
 	CImage *img = new CImage;
 	if (!fileName) {
 		return;
 	}
-	rt = MultiByteToWideChar(CP_ACP, 0, fileName, -1, NULL, 0);
-	rs = (LPWSTR)malloc(rt * sizeof(wchar_t));
-	MultiByteToWideChar(CP_ACP, 0, fileName, -1, rs, rt * sizeof(wchar_t));
-	HRESULT hr = img->Load(rs);
+	HRESULT hr = img->Load(fileName);
 	if (!SUCCEEDED(hr)) {
 		return;
 	}
