@@ -1,0 +1,22 @@
+a->a, semi
+b->b
+c->c, m
+d->d, k
+e->e, i
+f->f, j
+g->g, h
+r->r
+s->s, l
+t->t, u
+v->v, n
+w->w, o
+q->q, p
+x->x, comma
+y->y
+z->z, dot
+1->1, 0
+2->2, 9
+3->3, 8
+4->4, 7
+5->5, 6
+`->`, -, =
