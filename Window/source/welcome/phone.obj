@@ -1,0 +1,17 @@
+# Exported from 3D Builder
+mtllib phone.mtl
+
+o Object.1
+v 9.57 1.15 -16.44
+v 9.57 1.15 11.80
+v -8.19 1.15 11.80
+v -8.19 1.15 -16.44
+
+vt 1.0 0.0
+vt 1.0 1.0
+vt 0.0 1.0
+vt 0.0 0.0
+
+usemtl scrn
+f 2/2 1/1 3/3
+f 3/3 1/1 4/4
