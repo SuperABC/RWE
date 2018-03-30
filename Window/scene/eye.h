@@ -1,5 +1,6 @@
-#ifndef MOLE_WINDOW_SCENE_EYE
-#define MOLE_WINDOW_SCENE_EYE
+#ifndef RWE_WINDOW_SCENE_EYE
+#define RWE_WINDOW_SCENE_EYE
+
 #include "Frame/main/main.h"
 #include "Geometry/primitive/ray.h"
 

@@ -1,18 +1,17 @@
-#ifndef MOLE_WINDOW_SCENE_LIGHT
-#define MOLE_WINDOW_SCENE_LIGHT
+#ifndef RWE_WINDOW_SCENE_LIGHT
+#define RWE_WINDOW_SCENE_LIGHT
+
 #include "Frame/main/main.h"
 
 class Light {
 private:
-	glm::vec3 pos;
-	GLuint frameHandle, textureHandle;
-
-	glm::mat4 lightMatrix;
-
 	GLuint id;
 
-	void genShadow();
 public:
+	GLuint frameHandle, textureHandle;
+	glm::mat4 lightMatrix;
+
+	glm::vec3 pos;
 	glm::vec3 diffuse, ambient;
 	GLfloat specular;
 
@@ -52,7 +51,8 @@ public:
 		frameHandle = l.frameHandle;
 		id = l.id;
 	};
-	void render();
+
+	void genShadow();
 };
 
 #endif

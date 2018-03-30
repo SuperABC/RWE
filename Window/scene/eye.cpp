@@ -1,5 +1,5 @@
 #include "Frame/main/main.h"
-#include "eye.h"
+#include "Window/scene/eye.h"
 
 extern int SCR_WIDTH;
 extern int SCR_HEIGHT;
