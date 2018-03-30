@@ -29,6 +29,31 @@
 #pragma comment(lib, GL_Lib("freeglut_static"))
 #pragma comment(lib,"glew32.lib")
 
+#define RWE_KEY_F1 0x01
+#define RWE_KEY_F2 0x02
+#define RWE_KEY_F3 0x03
+#define RWE_KEY_F4 0x04
+#define RWE_KEY_F5 0x05
+#define RWE_KEY_F6 0x06
+#define RWE_KEY_F7 0x07
+#define RWE_KEY_F8 0x08
+#define RWE_KEY_F9 0x09
+#define RWE_KEY_F10 0x0A
+#define RWE_KEY_F11 0x0B
+#define RWE_KEY_F12 0x0C
+#define RWE_KEY_LEFT 0x64
+#define RWE_KEY_UP 0x65
+#define RWE_KEY_RIGHT 0x66
+#define RWE_KEY_DOWN 0x67
+#define RWE_KEY_PAGEUP 0x68
+#define RWE_KEY_PAGEDOWN 0x69
+#define RWE_KEY_HOME 0x6A
+#define RWE_KEY_END 0x6B
+#define RWE_KEY_INSERT 0x6C
+#define RWE_KEY_SHIFT 0x70
+#define RWE_KEY_CTRL 0x72
+#define RWE_KEY_ALT 0x74
+
 using std::cin;
 using std::cout;
 using std::endl;

@@ -1,7 +1,8 @@
 #ifndef RWE_GEOMETRY_PRIMITIVE_RAY
 #define RWE_GEOMETRY_PRIMITIVE_RAY
+
 #include "Frame/main/main.h"
-#include "arith.h"
+#include "Geometry/primitive/arith.h"
 
 class Ray {
 public:

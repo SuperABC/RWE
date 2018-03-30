@@ -2,8 +2,8 @@
 #define RWE_GEOMETRY_PRIMITIVE_BOX
 
 #include "Frame/main/main.h"
-#include "arith.h"
-#include "ray.h"
+#include "Geometry/primitive/arith.h"
+#include "Geometry/primitive/ray.h"
 
 class Box {
 public:

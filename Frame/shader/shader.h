@@ -1,5 +1,5 @@
-#ifndef MOLE_FRAME_SHADER_SHADER
-#define MOLE_FRAME_SHADER_SHADER
+#ifndef RWE_MAIN_SHADER_SHADER
+#define RWE_MAIN_SHADER_SHADER
 
 /*
  *Class Shader is used to render the image.
