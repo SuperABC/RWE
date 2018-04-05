@@ -64,7 +64,8 @@ void renderGlobe() {
 		glBindTexture(GL_TEXTURE_2D, light[i]->textureHandle);
 	}
 	for (auto s : globe) {
-		s->show();
+		if(s->active)
+			s->show();
 	}
 }
 
@@ -75,7 +76,7 @@ static void RWEInit() {
 	texShader = new Shader("Frame//shader//tex.vert", "Frame//shader//tex.frag");
 	shadowShader = new Shader("Frame//shader//shadow.vert", "Frame//shader//shadow.frag");
 
-	eye = new Eye(glm::vec3(0.0f, 0.0f, 8.0f));
+	eye = new Eye(glm::vec3(0.0f, 0.0f, 32.0f));
 	mouse = new Mouse();
 	key = new Keyboard();
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
@@ -102,18 +103,18 @@ static void RWEMouse(int x, int y) {
 	mouse->tmp.y = float(y);
 
 	for (auto l : window) {
-		l->mouseMove(eye->ray(x, y));
+		if (l->active)l->mouseMove(eye->ray(x, y));
 	}
 
 	glutPostRedisplay();
 }
 static void RWEDrag(int x, int y) {
-	if (mouse->state[GLUT_LEFT_BUTTON] == GLUT_DOWN)
+	if (mouse->state[GLUT_LEFT_BUTTON] == GLUT_DOWN && key->ctrl)
 		eye->rotate(float(x - mouse->pre.x) / 200, float(y - mouse->pre.y) / 200);
-	if (mouse->state[GLUT_RIGHT_BUTTON] == GLUT_DOWN)
+	if (mouse->state[GLUT_RIGHT_BUTTON] == GLUT_DOWN && key->ctrl)
 		eye->move(float(x - mouse->pre.x) / 2, float(y - mouse->pre.y) / 2);
 	for (auto l : window) {
-		l->mouseDrag(eye->ray(x, y), eye->ray((int)mouse->pre.x, (int)mouse->pre.y));
+		if (l->active)l->mouseDrag(eye->ray(x, y), eye->ray((int)mouse->pre.x, (int)mouse->pre.y));
 	}
 	mouse->pre.x = float(x);
 	mouse->pre.y = float(y);
@@ -126,8 +127,8 @@ static void RWEClick(int button, int state, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
 		mouse->state[GLUT_LEFT_BUTTON] = GLUT_DOWN;
 	}
-	for (unsigned int i = 0; i < window.size(); i++) {
-		window[i]->mouseClick(button, state, eye->ray(x, y));
+	for (auto l : window) {
+		if(l->active)l->mouseClick(button, state, eye->ray(x, y));
 	}
 
 	glutPostRedisplay();
@@ -136,7 +137,7 @@ static void RWEWheel(int wheel, int dir, int x, int y) {
 	if (dir > 0)eye->zoom(.8f);
 	if (dir < 0)eye->zoom(1.2f);
 	for (auto l : window) {
-		l->mouseClick(wheel, dir, eye->ray(x, y));
+		if(l->active)l->mouseClick(wheel, dir, eye->ray(x, y));
 	}
 	glutPostRedisplay();
 }
@@ -145,30 +146,41 @@ static void RWESpecialDown(int key, int x, int y) {
 	if (key == RWE_KEY_SHIFT)::key->shift = true;
 	if (key == RWE_KEY_ALT)::key->alt = true;
 	for (auto l : window) {
-		l->keyDown(key);
+		if(l->active)l->keyDown(key | 0x100);
 	}
+	glutPostRedisplay();
 }
 static void RWESpecialUp(int key, int x, int y) {
 	if (key == RWE_KEY_CTRL)::key->ctrl = false;
 	if (key == RWE_KEY_SHIFT)::key->shift = false;
 	if (key == RWE_KEY_ALT)::key->alt = false;
 	for (auto l : window) {
-		l->keyUp(key);
+		if (l->active)l->keyUp(key);
 	}
+	glutPostRedisplay();
 }
 static void RWEKeyDown(unsigned char cAscii, int x, int y) {
 	for (auto l : window) {
-		l->keyDown(cAscii);
+		if (l->active)l->keyDown(cAscii);
 	}
+	glutPostRedisplay();
 }
 static void RWEKeyUp(unsigned char cAscii, int x, int y) {
 	for (auto l : window) {
-		l->keyUp(cAscii);
+		if (l->active)l->keyUp(cAscii);
 	}
+	glutPostRedisplay();
+}
+static void RWEIdle(int value) {
+	for (auto l : window) {
+		if (l->active)l->idle();
+	}
+	glutTimerFunc(10, RWEIdle, 0);
+	glutPostRedisplay();
 }
 
 void build() {
-	(new Welcome())->registerPage();
+	(new Welcome("Home page"))->registerPage();
 	light.push_back(new Light(0, glm::vec3(-24.f, 48.f, 32.f), glm::vec3(.7f, .7f, .7f), glm::vec3(.3f, .3f, .3f), .3f));
 	light.push_back(new Light(1, glm::vec3(24.f, 36.f, -18.f), glm::vec3(.3f, .3f, .3f), glm::vec3(.1f, .1f, .1f), .4f));
 	light.push_back(new Light(2, glm::vec3(24.f, 32.f, 10.f), glm::vec3(.2f, .2f, .2f), glm::vec3(.0f, .0f, .0f), .4f));
@@ -192,6 +204,7 @@ int main(int argc, char *argv[]) {
 	glutKeyboardUpFunc(RWEKeyUp);
 	glutSpecialFunc(RWESpecialDown);
 	glutSpecialUpFunc(RWESpecialUp);
+	glutTimerFunc(10, RWEIdle, 0);
 
 	build();
 	glutMainLoop();
