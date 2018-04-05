@@ -1,12 +1,7 @@
 #ifndef RWE_MAIN_SHADER_SHADER
 #define RWE_MAIN_SHADER_SHADER
 
-/*
- *Class Shader is used to render the image.
-*/
-
 #include "Frame/main/main.h"
-
 #include <sstream>
 
 class Shader {
