@@ -1,0 +1,18 @@
+#
+# Copyright (c) 2017-2018, Super GP Individual.
+# All Rights Reserved.
+#
+# Permission to use, copy, modify, and distribute this library for any
+# purpose and without fee is hereby granted, provided that the above
+# copyright notice appear in all copies and that both the copyright
+# notice and this permission notice appear in supporting documentation,
+# and that the name of SGL and SGS not be used in advertising or
+# publicity pertaining to distribution of the software without specific, 
+# written prior permission.
+#
+
+new class point with integer x, integer y.
+new class quad with integer left, integer right, integer top, integer bottom.
+
+new class bitmap with integer widht, integer height, string data.
+
