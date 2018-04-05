@@ -67,6 +67,19 @@ using std::list;
 #define SHADOW_WIDTH 8192
 #define SHADOW_HEIGHT 8192
 
+#define SG_BUTTON_UP 0x80
+#define SG_BUTTON_DOWN 0x00
+#define SG_KEY_UP 0x80
+#define SG_KEY_DOWN 0x00
+
+#define SG_LEFT_BUTTON 0x01
+#define SG_RIGHT_BUTTON 0x02
+#define SG_MIDDLE_BUTTON 0x04
+#define SG_MIDDLE_BUTTON_UP 0x08
+#define SG_MIDDLE_BUTTON_DOWN 0x10
+
+#define INRECT(x, y, xl, yl, xh, yh) (((x)>=(xl))&&((x)<(xh))&&((y)>=(yl))&&((y)<(yh)))
+
 template <typename T>
 T *toArray(vector<T> *v) {
 	return &((*v)[0]);
@@ -88,6 +101,14 @@ T max(T x, T y) {
 template <typename T>
 T interpolate(float prop, T x, T y) {
 	return x*prop + y*(1 - prop);
+}
+template <typename T>
+float length(T v) {
+	float sq = 0.f;
+	for (int i = 0; i < v.length(); i++) {
+		sq += (&v.x)[i] * (&v.x)[i];
+	}
+	return sqrt(sq);
 }
 
 struct Mouse {
