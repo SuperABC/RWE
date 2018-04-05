@@ -1,5 +1,9 @@
 #include "Geometry/primitive/shape.h"
 
+glm::vec2 Square::getSize() {
+	return glm::vec2(widthPixel, heightPixel);
+}
+
 glm::vec2 Square::intersect(Ray r) {
 	float t = ((p1.x-r.src.x)*norm.x + (p1.y-r.src.y)*norm.y + (p1.z-r.src.z)*norm.z) /
 		(norm.x* r.dir.x + norm.y* r.dir.y + norm.z* r.dir.z);
