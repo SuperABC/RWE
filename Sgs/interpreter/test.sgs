@@ -1,0 +1,13 @@
+new class sb with string name, integer id.
+let integer total sb be 0.
+let sb yuan de hua be sb{ "yuan de hua", total sb }.
+let total sb be total sb + 1.
+let sb liu shang qing be sb{ "liu shang qing", total sb }.
+let total sb be total sb + 1.
+let sb gao tian xiang be sb{ "gao tian xiang", total sb }.
+let total sb be total sb + 1.
+
+outln with content "There are 3 sb: " + 
+	yuan de hua's name + ", " +
+	liu shang qing's name + ", " +
+	gao tian xiang's name + ".".
