@@ -1,0 +1,11 @@
+let integer rounds be 1000.
+let integer sum be 0.
+
+let integer time begin be current time.
+loop when rounds > 0.
+	let sum be sum + rounds.
+	let rounds be rounds - 1.
+end loop.
+let integer time over be current time.
+
+outln with content sum.
