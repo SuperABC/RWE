@@ -1,4 +1,4 @@
-#include "layout.h"
+#include "Window/layout/layout.h"
 
 extern vector<Layout*> window;
 extern vector<Scene*> globe;
@@ -11,4 +11,7 @@ void Layout::registerPage() {
 	}
 	this->active = true;
 	::window.push_back(this);
+}
+void Layout::destroy() {
+
 }
