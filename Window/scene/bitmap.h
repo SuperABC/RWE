@@ -1,5 +1,6 @@
 #ifndef RWE_WINDOW_SCENE_BITMAP
 #define RWE_WINDOW_SCENE_BITMAP
+
 #include "Frame/main/main.h"
 #include "Geometry/primitive/shape.h"
 
@@ -19,6 +20,23 @@ public:
 class Screen : public Bitmap {
 private:
 	byte rgb[3];
+
+	struct _text {
+		HDC memDC;
+		HFONT font;
+		HBITMAP hbm;
+		BITMAP bm;
+		BITMAPINFOHEADER bi;
+		char *bitBuf;
+		int bufSize;
+		SIZE strRect;
+	}text;
+	struct font {
+		RGB color;
+		int size;
+		const char *name;
+		int coeff;
+	}tf;
 
 	byte letters[256][8] = {
 		{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, //0x00
@@ -278,10 +296,114 @@ private:
 		{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, //0xFE
 		{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, //0xFF
 	};
+
+	LPWSTR _widenStr(const char *src) {
+		int rt;
+		LPWSTR rs;
+
+		if (src == NULL)return NULL;
+
+		rt = MultiByteToWideChar(CP_ACP, 0, src, -1, NULL, 0);
+		rs = (LPWSTR)malloc(rt * sizeof(wchar_t));
+		MultiByteToWideChar(CP_ACP, 0, src, -1, rs, rt * sizeof(wchar_t));
+		return rs;
+	}
+	void _prepareText() {
+		text.memDC = CreateCompatibleDC(NULL);
+		text.hbm = CreateBitmap(1280, 128, 1, 32, NULL);
+
+		GetObject(text.hbm, sizeof(text.bm), &text.bm);
+		int bmRowCount = ((text.bm.bmWidth * 24 + 31) / 32) * 4;
+		text.bufSize = bmRowCount * text.bm.bmHeight;
+		text.bitBuf = (char *)malloc(text.bufSize);
+		memset(text.bitBuf, 0, text.bufSize);
+
+		text.bi.biSize = sizeof(BITMAPINFOHEADER);
+		text.bi.biWidth = text.bm.bmWidth;
+		text.bi.biHeight = text.bm.bmHeight;
+		text.bi.biPlanes = 1;
+		text.bi.biBitCount = 24;
+		text.bi.biCompression = BI_RGB;
+		text.bi.biSizeImage = 0;
+		text.bi.biXPelsPerMeter = 0;
+		text.bi.biYPelsPerMeter = 0;
+		text.bi.biClrImportant = 0;
+		text.bi.biClrUsed = 0;
+
+		SelectObject(text.memDC, text.hbm);
+
+		tf.color.r = tf.color.g = tf.color.b = 0;
+		tf.size = 20;
+		//tf.name = _widenStr("Î¢ÈíÑÅºÚ");
+		tf.name = "Î¢ÈíÑÅºÚ";
+		tf.coeff = 0;
+
+		SetTextColor(text.memDC, RGB(255, 255, 255));
+		SetBkMode(text.memDC, TRANSPARENT);
+
+		text.font = CreateFont(tf.size, 0, 0, 0, FW_THIN, 0, 0, 0,
+			DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, CLIP_CHARACTER_PRECIS,
+			DEFAULT_QUALITY, FF_MODERN, tf.name);
+		SelectObject(text.memDC, text.font);
+	}
+	void _putImageRev(int left, int top, Bitmap *bitmap) {
+		int x1, x2, y1, y2, i, j, rate;
+
+		if (left >= sizeX || top >= sizeY)return;
+		if (left + bitmap->sizeX <= 0 || top + bitmap->sizeY <= 0)return;
+
+		if (left < 0)x1 = 0;
+		else x1 = left;
+		if (top < 0)y1 = 0;
+		else y1 = top;
+
+		if (left + text.strRect.cx >= sizeX)x2 = sizeX - 1;
+		else x2 = left + text.strRect.cx;
+		y2 = top + bitmap->sizeY - 1;
+
+		int tmp;
+		for (i = 0; i < y2 - y1; i++) {
+			if (top + i >= sizeY)break;
+			for (j = 0; j < x2 - x1; j++) {
+				if (rate = bitmap->data[(bitmap->sizeX*(y2 - y1 - i) + j) * 3]) {
+					tmp = data[(sizeX * (top - i) + left + j) * 3] * (255 - rate);
+					tmp += tf.color.b*rate;
+					data[(sizeX * (top - i) + left + j) * 3] = tmp >> 8;
+				}
+				if (rate = bitmap->data[(bitmap->sizeX*(y2 - y1 - i) + j) * 3 + 1]) {
+					tmp = data[(sizeX * (top - i) + left + j) * 3 + 1] * (255 - rate);
+					tmp += tf.color.g*rate;
+					data[(sizeX * (top - i) + left + j) * 3 + 1] = tmp >> 8;
+				}
+				if (rate = bitmap->data[(bitmap->sizeX*(y2 - y1 - i) + j) * 3 + 2]) {
+					tmp = data[(sizeX * (top - i) + left + j) * 3 + 2] * (255 - rate);
+					tmp += tf.color.r*rate;
+					data[(sizeX * (top - i) + left + j) * 3 + 2] = tmp >> 8;
+				}
+			}
+		}
+
+	}
+	void _hbmImage(HDC hdc, HBITMAP hbm, int x, int y, const char *str) {
+		GetDIBits(hdc, hbm, 0, text.bm.bmHeight, text.bitBuf, (BITMAPINFO*)(&text.bi), DIB_RGB_COLORS);
+
+		Bitmap tmp;
+		tmp.sizeX = text.bi.biWidth;
+		tmp.sizeY = tf.size;
+		tmp.data = (unsigned char *)text.bitBuf + text.bi.biWidth*(text.bi.biHeight - tmp.sizeY) * 3;
+		_putImageRev(x, y, &tmp);
+	}
 public:
+	enum {
+		BIT_MAP,
+		TEXT_MAP
+	};
 	enum {
 		SOLID_FILL,
 		EMPTY_FILL
+	};
+	enum {
+		SOLID_LINE
 	};
 	enum {
 		COPY_PUT,
@@ -291,19 +413,27 @@ public:
 		NOT_PUT
 	};
 
+	Screen() {
+		_prepareText();
+	}
+	void initWindow(int x, int y, const char *title, int mode);
+
 	void setColor(int r, int g, int b);
 	void clearScreen();
 	int putPixel(int x, int y);
 	RGB getPixel(int x, int y);
-	void putLine(int x1, int y1, int x2, int y2);
+	void putLine(int x1, int y1, int x2, int y2, int mode);
 	void putQuad(int x1, int y1, int x2, int y2, int mode);
 	void putCircle(int xc, int yc, int r, int mode);
 	void putEllipse(int xc, int yc, int a, int b, int mode);
-	int loadBmp(int x, int y, char *filename);
+	int loadBmp(int x, int y, const char *filename);
 	void putNumber(int n, int x, int y, char lr);
 	void putChar(char ch, int x, int y);
-	void putString(char *str, int x, int y);
-	int putStringConstraint(char *str, int x, int y, int constraint);
+	void setFontSize(int size);
+	void setFontName(const char *name);
+	void putString(const char *str, int x, int y);
+	int stringWidth(const char *str, int x);
+	int putStringConstraint(const char *str, int x, int y, int constraint);
 };
 class Canvas : public Screen {
 private:
@@ -348,7 +478,7 @@ public:
 	Canvas(glm::vec3 d = glm::vec3(1.0, 1.0, 1.0), glm::vec3 a = glm::vec3(0.0, 0.0, 0.0), float s = 0);
 	~Canvas();
 
-	void pic(const char *fileName);
+	void pic(const char *fileName = NULL);
 	Canvas *load(const char *filename);
 	void show();
 };
