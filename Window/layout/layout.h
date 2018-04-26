@@ -4,13 +4,16 @@
 #include "Frame/main/main.h"
 #include "Window/scene/model.h"
 #include "Window/scene/bitmap.h"
+#include "Text/editor/editor.h"
+#include "Cpp/gcc/gcc.h"
 
 #define MAX_WND 16
 
 enum LAYOUTTYPE {
 	LT_WELCOME,
-	LT_COMPILER,
-	LT_SGS
+	LT_TEXT,
+	LT_SGS,
+	LT_CPP
 };
 
 class Layout {
@@ -18,12 +21,18 @@ protected:
 	Scene window;
 public:
 	LAYOUTTYPE type;
+	string name;
 	bool active;
 
-	Layout() : active(false) {};
+	Layout(string n) : name(n), active(false) {};
 	~Layout() {};
 
 	void registerPage();
+	void destroy();
+	void activate(bool act) {
+		active = act;
+		window.active = act;
+	}
 
 	virtual void keyDown(int code) = 0;
 	virtual void keyUp(int code) = 0;
@@ -33,13 +42,14 @@ public:
 	virtual void mouseWheel(int wheel, int dir, Ray r) = 0;
 
 	virtual void idle() = 0;
+	virtual void rebuild() = 0;
 };
 
 class Welcome : public Layout {
 private:
 	Canvas canvas;
 public:
-	Welcome();
+	Welcome(string name);
 
 	virtual void keyDown(int code);
 	virtual void keyUp(int code);
@@ -48,12 +58,13 @@ public:
 	virtual void mouseClick(int button, int state, Ray r);
 	virtual void mouseWheel(int wheel, int dir, Ray r);
 	virtual void idle();
+	virtual void rebuild();
 };
 class Text : public Layout {
 private:
-	//Editor editor;
+	Editor editor;
 public:
-	Text();
+	Text(string name);
 
 	virtual void keyDown(int code);
 	virtual void keyUp(int code);
@@ -62,14 +73,15 @@ public:
 	virtual void mouseClick(int button, int state, Ray r);
 	virtual void mouseWheel(int wheel, int dir, Ray r);
 	virtual void idle();
+	virtual void rebuild();
 };
 class Sgs : public Layout {
 private:
-	//Editor editor;
+	Editor editor;
 	//SgsMach machine;
 	//Console console;
 public:
-	Sgs();
+	Sgs(string name);
 
 	virtual void keyDown(int code);
 	virtual void keyUp(int code);
@@ -78,5 +90,23 @@ public:
 	virtual void mouseClick(int button, int state, Ray r);
 	virtual void mouseWheel(int wheel, int dir, Ray r);
 	virtual void idle();
+	virtual void rebuild();
 };
+class Cpp : public Layout {
+private:
+	Editor editor;
+	Gcc gcc;
+public:
+	Cpp(string name);
+
+	virtual void keyDown(int code);
+	virtual void keyUp(int code);
+	virtual void mouseMove(Ray r);
+	virtual void mouseDrag(Ray r, Ray pre);
+	virtual void mouseClick(int button, int state, Ray r);
+	virtual void mouseWheel(int wheel, int dir, Ray r);
+	virtual void idle();
+	virtual void rebuild();
+};
+
 #endif
