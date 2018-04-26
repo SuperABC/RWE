@@ -12,10 +12,18 @@ extern vector<Scene*> globe;
 extern vector<Light*> light;
 extern Eye *eye;
 
+void Screen::initWindow(int x, int y, const char *title, int mode) {
+
+}
+
 void Screen::setColor(int r, int g, int b) {
 	rgb[0] = r % 256;
 	rgb[1] = g % 256;
 	rgb[2] = b % 256;
+
+	tf.color.r = r;
+	tf.color.g = g;
+	tf.color.b = b;
 }
 void Screen::clearScreen() {
 	int i;
@@ -63,12 +71,11 @@ RGB Screen::getPixel(int x, int y) {
 
 	return ret;
 }
-void Screen::putLine(int x1, int y1, int x2, int y2) {
+void Screen::putLine(int x1, int y1, int x2, int y2, int mode) {
 	int dx, dy, ux, uy, x, y, eps;
 
-	y1 = sizeY - 1 - y1;
-	y2 = sizeY - 1 - y2;
-#define ABS(x) ((x > 0) ? (x) : (-x))
+	if (x1 > x2)x1 ^= x2 ^= x1 ^= x2;
+	if (y1 > y2)y1 ^= y2 ^= y1 ^= y2;
 
 	dx = x2 - x1;
 	dy = y2 - y1;
@@ -80,12 +87,10 @@ void Screen::putLine(int x1, int y1, int x2, int y2) {
 	y = y1;
 
 	eps = 0;
-	dx = ABS(dx);
-	dy = ABS(dy);
 
 	if (dx > dy) {
 		for (x = x1; x != x2 + ux; x += ux) {
-			putPixel(x, sizeY - 1 - y);
+			putPixel(x, y);
 			eps += dy;
 			if ((eps << 1) >= dx) {
 				y += uy;
@@ -95,7 +100,7 @@ void Screen::putLine(int x1, int y1, int x2, int y2) {
 	}
 	else {
 		for (y = y1; y != y2 + uy; y += uy) {
-			putPixel(x, sizeY - 1 - y);
+			putPixel(x, y);
 			eps += dx;
 			if ((eps << 1) >= dy) {
 				x += ux;
@@ -103,22 +108,38 @@ void Screen::putLine(int x1, int y1, int x2, int y2) {
 			}
 		}
 	}
-#undef ABS
 }
 void Screen::putQuad(int x1, int y1, int x2, int y2, int mode) {
 	int i, j;
+
 	y1 = sizeY - 1 - y1;
 	y2 = sizeY - 1 - y2;
+	if (x1 > x2)x1 ^= x2 ^= x1 ^= x2;
+	if (y1 > y2)y1 ^= y2 ^= y1 ^= y2;
 
 	if (mode == SOLID_FILL)
-		for (i = x1; i <= x2; i++)
-			for (j = y1; j <= y2; j++)
-				putPixel(i, sizeY - 1 - j);
+		for (j = y1; j <= y2; j++) {
+			int pos = (j * sizeX + x1) * 3;
+			for (i = x1; i <= x2; i++) {
+				data[pos] = rgb[2];
+				data[pos + 1] = rgb[1];
+				data[pos + 2] = rgb[0];
+				pos += 3;
+			}
+		}
 
 	if (mode == EMPTY_FILL) {
+		int pos1 = (y1 * sizeX + x1) * 3;
+		int pos2 = (y2 * sizeX + x1) * 3;
 		for (i = x1; i <= x2; i++) {
-			putPixel(i, sizeY - 1 - y1);
-			putPixel(i, sizeY - 1 - y2);
+			data[pos1] = rgb[2];
+			data[pos1 + 1] = rgb[1];
+			data[pos1 + 2] = rgb[0];
+			pos1 += 3;
+			data[pos2] = rgb[2];
+			data[pos2 + 1] = rgb[1];
+			data[pos2 + 2] = rgb[0];
+			pos2 += 3;
 		}
 		for (j = y1; j <= y2; j++) {
 			putPixel(x1, sizeY - 1 - j);
@@ -128,7 +149,6 @@ void Screen::putQuad(int x1, int y1, int x2, int y2, int mode) {
 }
 void Screen::putCircle(int xc, int yc, int r, int mode) {
 	int x, y, yi, d;
-	yc = sizeY - 1 - yc;
 
 	x = 0;
 	y = r;
@@ -137,14 +157,14 @@ void Screen::putCircle(int xc, int yc, int r, int mode) {
 	if (mode == SOLID_FILL) {
 		while (x <= y) {
 			for (yi = x; yi <= y; yi++) {
-				putPixel(xc + x, sizeY - 1 - (yc + yi));
-				putPixel(xc + x, sizeY - 1 - (yc - yi));
-				putPixel(xc - x, sizeY - 1 - (yc - yi));
-				putPixel(xc - x, sizeY - 1 - (yc + yi));
-				putPixel(xc + yi, sizeY - 1 - (yc + x));
-				putPixel(xc + yi, sizeY - 1 - (yc - x));
-				putPixel(xc - yi, sizeY - 1 - (yc - x));
-				putPixel(xc - yi, sizeY - 1 - (yc + x));
+				putPixel(xc + x, yc + yi);
+				putPixel(xc + x, yc - yi);
+				putPixel(xc - x, yc - yi);
+				putPixel(xc - x, yc + yi);
+				putPixel(xc + yi, yc + x);
+				putPixel(xc + yi, yc - x);
+				putPixel(xc - yi, yc - x);
+				putPixel(xc - yi, yc + x);
 			}
 
 			if (d < 0)d = d + 4 * x + 6;
@@ -157,14 +177,14 @@ void Screen::putCircle(int xc, int yc, int r, int mode) {
 	}
 	if (mode == EMPTY_FILL) {
 		while (x <= y) {
-			putPixel(xc + x, sizeY - 1 - (yc + y));
-			putPixel(xc + x, sizeY - 1 - (yc - y));
-			putPixel(xc - x, sizeY - 1 - (yc - y));
-			putPixel(xc - x, sizeY - 1 - (yc + y));
-			putPixel(xc + y, sizeY - 1 - (yc + x));
-			putPixel(xc + y, sizeY - 1 - (yc - x));
-			putPixel(xc - y, sizeY - 1 - (yc - x));
-			putPixel(xc - y, sizeY - 1 - (yc + x));
+			putPixel(xc + x, yc + y);
+			putPixel(xc + x, yc - y);
+			putPixel(xc - x, yc - y);
+			putPixel(xc - x, yc + y);
+			putPixel(xc + y, yc + x);
+			putPixel(xc + y, yc - x);
+			putPixel(xc - y, yc - x);
+			putPixel(xc - y, yc + x);
 
 			if (d < 0)d = d + 4 * x + 6;
 			else {
@@ -177,7 +197,6 @@ void Screen::putCircle(int xc, int yc, int r, int mode) {
 }
 void Screen::putEllipse(int xc, int yc, int a, int b, int mode) {
 	int sqa, sqb, x, y, d, P_x, xi;
-	yc = sizeY - 1 - yc;
 
 	sqa = a * a;
 	sqb = b * b;
@@ -186,8 +205,8 @@ void Screen::putEllipse(int xc, int yc, int a, int b, int mode) {
 	d = 2 * sqb - 2 * b * sqa + sqa;
 	P_x = (int)((double)sqa / sqrt((double)(sqa + sqb)));
 
-	putPixel(xc + x, sizeY - 1 - (yc + y));
-	putPixel(xc - x, sizeY - 1 - (yc - y));
+	putPixel(xc + x, yc + y);
+	putPixel(xc - x, yc - y);
 
 	if (mode == SOLID_FILL) {
 		while (x <= P_x) {
@@ -199,19 +218,19 @@ void Screen::putEllipse(int xc, int yc, int a, int b, int mode) {
 			x++;
 
 			for (xi = 0; xi <= x; xi++) {
-				putPixel(xc + xi, sizeY - 1 - (yc + y));
-				putPixel(xc - xi, sizeY - 1 - (yc + y));
-				putPixel(xc + xi, sizeY - 1 - (yc - y));
-				putPixel(xc - xi, sizeY - 1 - (yc - y));
+				putPixel(xc + xi, yc + y);
+				putPixel(xc - xi, yc + y);
+				putPixel(xc + xi, yc - y);
+				putPixel(xc - xi, yc - y);
 			}
 		}
 		d = sqb * (x * x + x) + sqa * (y * y - y) - sqa * sqb;
 		while (y >= 0) {
 			for (xi = 0; xi <= x; xi++) {
-				putPixel(xc + xi, sizeY - 1 - (yc + y));
-				putPixel(xc - xi, sizeY - 1 - (yc + y));
-				putPixel(xc + xi, sizeY - 1 - (yc - y));
-				putPixel(xc - xi, sizeY - 1 - (yc - y));
+				putPixel(xc + xi, yc + y);
+				putPixel(xc - xi, yc + y);
+				putPixel(xc + xi, yc - y);
+				putPixel(xc - xi, yc - y);
 			}
 			y--;
 
@@ -230,17 +249,17 @@ void Screen::putEllipse(int xc, int yc, int a, int b, int mode) {
 				y--;
 			}
 			x++;
-			putPixel(xc + x, sizeY - 1 - (yc + y));
-			putPixel(xc - x, sizeY - 1 - (yc + y));
-			putPixel(xc + x, sizeY - 1 - (yc - y));
-			putPixel(xc - x, sizeY - 1 - (yc - y));
+			putPixel(xc + x, yc + y);
+			putPixel(xc - x, yc + y);
+			putPixel(xc + x, yc - y);
+			putPixel(xc - x, yc - y);
 		}
 		d = sqb * (x * x + x) + sqa * (y * y - y) - sqa * sqb;
 		while (y >= 0) {
-			putPixel(xc + x, sizeY - 1 - (yc + y));
-			putPixel(xc - x, sizeY - 1 - (yc + y));
-			putPixel(xc + x, sizeY - 1 - (yc - y));
-			putPixel(xc - x, sizeY - 1 - (yc - y));
+			putPixel(xc + x, yc + y);
+			putPixel(xc - x, yc + y);
+			putPixel(xc + x, yc - y);
+			putPixel(xc - x, yc - y);
 			y--;
 			if (d < 0) {
 				x++;
@@ -250,7 +269,7 @@ void Screen::putEllipse(int xc, int yc, int a, int b, int mode) {
 		}
 	}
 }
-int Screen::loadBmp(int x, int y, char *filename) {
+int Screen::loadBmp(int x, int y, const char *filename) {
 	FILE *fp = NULL;
 	byte *p = NULL, *tmp = NULL;
 	int width, height, i;
@@ -277,7 +296,7 @@ int Screen::loadBmp(int x, int y, char *filename) {
 	dataOffset = *(GLuint *)(p + 0x0A);
 	lineBytes = (width * 3 + 3) / 4 * 4;
 
-	if (y + height > (int)sizeY) {
+	if (sizeY - 1 - y + height > (int)sizeY) {
 		fseek(fp, dataOffset + (y + height - sizeY)*lineBytes, SEEK_SET);
 		height = sizeY - y;
 	}
@@ -304,24 +323,23 @@ displayError:
 void Screen::putNumber(int n, int x, int y, char lr) {
 	int s[20], sn = 0;
 
-	y = sizeY - 1 - y;
 	if (lr == 'l') {
-		if (n == 0)putChar('0', x, sizeY - 1 - y);
+		if (n == 0)putChar('0', x, y);
 		while (n > 0) {
 			s[sn++] = n % 10;
 			n /= 10;
 		}
 
 		while (sn > 0) {
-			putChar((char)(s[--sn] + '0'), x, sizeY - 1 - y);
+			putChar((char)(s[--sn] + '0'), x, y);
 			x += 8;
 		}
 	}
 	else if (lr == 'r') {
-		if (n == 0)putChar('0', x - 8, sizeY - 1 - y);
+		if (n == 0)putChar('0', x - 8, y);
 		while (n > 0) {
 			x -= 8;
-			putChar((char)(n % 10 + '0'), x, sizeY - 1 - y);
+			putChar((char)(n % 10 + '0'), x, y);
 			n /= 10;
 		}
 	}
@@ -329,42 +347,89 @@ void Screen::putNumber(int n, int x, int y, char lr) {
 void Screen::putChar(char ch, int x, int y) {
 	int j, k;
 
-	y = sizeY - 1 - y;
 	for (j = 0; j < 8; j++)
 		for (k = 7; k >= 0; k--)
 			if ((letters[ch][j] >> k) & 1) {
-				putPixel(x + 7 - k, sizeY - 1 - (y + 2 * j));
-				putPixel(x + 7 - k, sizeY - 1 - (y + 2 * j + 1));
+				putPixel(x + 7 - k, y + 2 * j);
+				putPixel(x + 7 - k, y + 2 * j + 1);
 			}
 }
-void Screen::putString(char *str, int x, int y) {
-	int len, i, j, k, xBegin;
+void Screen::setFontSize(int size) {
+	if (size < 128)tf.size = size;
+	else tf.size = 128;
 
-	y = sizeY - 1 - y;
+	DeleteObject(text.font);
+	text.font = CreateFont(tf.size, 0, 0, 0, FW_THIN, 0, 0, 0,
+		DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, CLIP_CHARACTER_PRECIS,
+		DEFAULT_QUALITY, FF_MODERN, tf.name);
+	SelectObject(text.memDC, text.font);
+}
+void Screen::setFontName(const char *name) {
+	tf.name = name;
+
+	DeleteObject(text.font);
+	text.font = CreateFont(tf.size, 0, 0, 0, FW_THIN, 0, 0, 0,
+		DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, CLIP_CHARACTER_PRECIS,
+		DEFAULT_QUALITY, FF_MODERN, tf.name);
+	SelectObject(text.memDC, text.font);
+}
+void Screen::putString(const char *str, int x, int y) {
+	unsigned int tab = 0, i, j;
+	char *tmp;
 	if (str == NULL)return;
 
-	xBegin = x;
-	len = strlen(str);
-	for (i = 0; i < len; i++) {
-		if (str[i] == '\n') {
-			y += SG_LINE_DELTA_DEFAULT;
-			x = xBegin;
-			continue;
-		}
-		for (j = 0; j < 8; j++)
-			for (k = 7; k >= 0; k--)
-				if ((letters[str[i]][j] >> k) & 1) {
-					putPixel(x + 7 - k, sizeY - 1 - (y + 2 * j));
-					putPixel(x + 7 - k, sizeY - 1 - (y + 2 * j + 1));
-				}
-		x += SG_CHAR_WIDTH;
+	y = sizeY - 1 - y;
+	for (i = 0; i < strlen(str); i++) {
+		if (str[i] == '\t')tab++;
 	}
+	tmp = (char *)malloc(strlen(str) + 3 * tab + 1);
+	memset(tmp, 0, strlen(str) + 3 * tab + 1);
+	for (i = 0, j = 0; i < strlen(str); i++) {
+		if (str[i] == '\t') {
+			tmp[j] = tmp[j + 1] = tmp[j + 2] = tmp[j + 3] = ' ';
+			j += 4;
+		}
+		else tmp[j++] = str[i];
+	}
+
+	GetTextExtentPoint32(text.memDC, tmp, strlen(tmp), &text.strRect);
+	memset(text.bitBuf, 0, text.bufSize);
+	RECT imgRect = { 0, 0, text.strRect.cx, text.strRect.cy };
+	FillRect(text.memDC, &imgRect, (HBRUSH)GetStockObject(BLACK_BRUSH));
+
+	TextOut(text.memDC, 0, 0,tmp, strlen(tmp));
+	_hbmImage(text.memDC, text.hbm, x, y, tmp);
+	free(tmp);
 }
-int Screen::putStringConstraint(char *str, int x, int y, int constraint) {
+int Screen::stringWidth(const char *str, int x) {
+	SIZE ret;
+	int tab = 0, i, j;
+	char *tmp;
+
+	if (x < 0)return 0;
+
+	for (i = 0; i < x; i++) {
+		if (str[i] == '\t')tab++;
+	}
+	tmp = (char *)malloc(x + 3 * tab + 1);
+	memset(tmp, 0, x + 3 * tab + 1);
+	for (i = 0, j = 0; i < x; i++) {
+		if (str[i] == '\t') {
+			tmp[j] = tmp[j + 1] = tmp[j + 2] = tmp[j + 3] = ' ';
+			j += 4;
+		}
+		else tmp[j++] = str[i];
+	}
+	x += 3 * tab;
+
+	GetTextExtentPoint32(text.memDC, tmp, x, &ret);
+	free(tmp);
+	return ret.cx;
+}
+int Screen::putStringConstraint(const char *str, int x, int y, int constraint) {
 	int len, i, j, k;
 	int xBegin;
 
-	y = sizeY - 1 - y;
 	if (str == NULL)return -1;
 
 	xBegin = x;
@@ -378,8 +443,8 @@ int Screen::putStringConstraint(char *str, int x, int y, int constraint) {
 		for (j = 0; j < 8; j++)
 			for (k = 7; k >= 0; k--)
 				if ((letters[str[i]][j] >> k) & 1) {
-					putPixel(x + 7 - k, sizeY - 1 - (y + 2 * j));
-					putPixel(x + 7 - k, sizeY - 1 - (y + 2 * j + 1));
+					putPixel(x + 7 - k, y + 2 * j);
+					putPixel(x + 7 - k, y + 2 * j + 1);
 				}
 		x += SG_CHAR_WIDTH;
 	}
@@ -406,10 +471,14 @@ Canvas::~Canvas() {
 	glDeleteBuffers(3, vboHandles);
 }
 void Canvas::pic(const char *fileName) {
-	CImage *img = new CImage;
 	if (!fileName) {
+		sizeX = (int)area.getSize().x;
+		sizeY = (int)area.getSize().y;
+		data = (unsigned char *)malloc(3 * sizeX*sizeY);
+		memset(data, 0, 3 * sizeX*sizeY);
 		return;
 	}
+	CImage *img = new CImage();
 	HRESULT hr = img->Load(fileName);
 	if (!SUCCEEDED(hr)) {
 		return;
@@ -512,12 +581,17 @@ Canvas *Canvas::load(const char *filename) {
 			}
 		}
 		else if (op == "mtllib") {
+			fin >> op;
+			if (op == "empty") {
+				pic();
+				continue;
+			}
+
 			std::ifstream min;
 			string path = string(filename);
 			unsigned int tmp = path.find_last_of('/');
 			for (unsigned int i = path.length() - 1; i > tmp; i--)
 				path.pop_back();
-			fin >> op;
 			path += op;
 
 			min.open(path);
@@ -590,7 +664,7 @@ void Canvas::show() {
 	texShader->setMat4("u_modelMatrix", model);
 	glm::mat4x4 inv = glm::transpose(glm::inverse(model));
 	elementShader->setMat4("u_normalMatrix", inv);
-	for (int i = 0; i < light.size(); i++) {
+	for (unsigned int i = 0; i < light.size(); i++) {
 		char tmp[64];
 		sprintf(tmp, "u_shadowMap[%d]", i);
 		texShader->setInt(tmp, -1);
